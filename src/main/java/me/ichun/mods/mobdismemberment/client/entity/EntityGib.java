@@ -44,7 +44,7 @@ public class EntityGib extends Entity
 
         liveTime = (int)worldObj.getWorldTime();
 
-        setLocationAndAngles(parent.posX, parent.getEntityBoundingBox().minY, parent.posZ, parent.rotationYaw, parent.rotationPitch);
+        setLocationAndAngles(parent.posX, parent.boundingBox.minY, parent.posZ, parent.rotationYaw, parent.rotationPitch);
         rotationYaw = parent.prevRenderYawOffset;
         prevRotationYaw = parent.rotationYaw;
         prevRotationPitch = parent.rotationPitch;
@@ -249,7 +249,7 @@ public class EntityGib extends Entity
 
         if(MobDismemberment.config.gibPushing == 1)
         {
-            List var2 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().expand(0.15D, 0.0D, 0.15D));
+            List var2 = this.worldObj.getEntitiesWithinAABBExcludingEntity(this, this.boundingBox.expand(0.15D, 0.0D, 0.15D));
             if(var2 != null && !var2.isEmpty())
             {
                 Iterator var10 = var2.iterator();
@@ -294,8 +294,7 @@ public class EntityGib extends Entity
     }
 
     @Override
-    public void fall(float distance, float damageMultiplier)
-    {
+    protected void fall(float f) {
     }
 
     @Override

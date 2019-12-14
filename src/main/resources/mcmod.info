@@ -2,11 +2,12 @@
 {
   "modid" : "mobdismemberment",
   "name" : "MobDismemberment",
-  "version" : "${version}",
+  "version" : "4.1.0",
   "url" : "http://ichun.me/mods/mob-dismemberment/",
   "credits" : "",
   "authorList": [
-    "iChun"
+    "iChun",
+    "EverNife"
   ],
   "description": "Dismember mobs!",
   "logoFile" : "",

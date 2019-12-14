@@ -1,113 +1,81 @@
 package me.ichun.mods.mobdismemberment.client.particle;
 
 import me.ichun.mods.mobdismemberment.common.MobDismemberment;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.World;
 
-import java.util.List;
+public class ParticleBlood extends EntityFX {
 
-public class ParticleBlood extends Particle
-{
-    public ParticleBlood(World world, double d, double d1, double d2, double d3, double d4, double d5, boolean isPlayer)
-    {
+    public ParticleBlood(World world, double d, double d1, double d2, double d3, double d4, double d5, boolean isPlayer) {
         super(world, d, d1, d2, d3, d4, d5);
-        particleGravity = 0.06F;
-        particleRed = 1.0F;
-        particleGreen = MobDismemberment.config.greenBlood == 1 && !isPlayer ? 1.0F : 0.0F;
-        particleBlue = 0.0F;
-        particleScale *= 1.2F;
-        multiplyVelocity(1.2F);
-        motionY += rand.nextFloat() * 0.15F;
-        motionZ *= 0.4F / (rand.nextFloat() * 0.9F + 0.1F);
-        motionX *= 0.4F / (rand.nextFloat() * 0.9F + 0.1F);
-        particleMaxAge = (int)(200F + (20F / (rand.nextFloat() * 0.9F + 0.1F)));
-        setSize(0.01F, 0.01F);
-        setParticleTextureIndex(19 + rand.nextInt(4));
+        this.particleGravity = 1.2F;
+        this.particleRed = 1.2F;
+        this.particleGreen = this.particleBlue = 0.0F;
+        this.particleGreen = MobDismemberment.config.greenBlood == 1 && !isPlayer ? 5.0F : 0.0F;
+        this.particleScale *= 1.5F;
+        this.multiplyVelocity(1.2F);
+        this.motionY += (double)(this.rand.nextFloat() * 0.15F);
+        this.motionZ *= (double)(0.4F / (this.rand.nextFloat() * 0.9F + 0.1F));
+        this.motionX *= (double)(0.4F / (this.rand.nextFloat() * 0.9F + 0.1F));
+        this.particleMaxAge = (int)(200.0F + 20.0F / (this.rand.nextFloat() * 0.9F + 0.1F));
+        this.setParticleTextureIndex(19 + this.rand.nextInt(4));
+        this.renderDistanceWeight = 10.0D;
+    }
+
+    public void renderParticle(Tessellator tessellator, float f, float f1, float f2, float f3, float f4, float f5) {
+        super.renderParticle(tessellator, f, f1, f2, f3, f4, f5);
+    }
+
+    public int getBrightnessForRender(float f) {
+        int i = super.getBrightnessForRender(f);
+        float f1 = (float)this.particleAge / (float)this.particleMaxAge;
+        f1 *= f1;
+        f1 *= f1;
+        int j = i & 255;
+        int k = i >> 16 & 255;
+        k += (int)(f1 * 15.0F * 16.0F);
+        if (k > 240) {
+            k = 240;
+        }
+
+        return j | k << 16;
+    }
+
+    public float getBrightness(float f) {
+        float f1 = super.getBrightness(f);
+        float f2 = (float)this.particleAge / (float)this.particleMaxAge;
+        f2 *= f2;
+        f2 *= f2;
+        return f1 * (1.0F - f2) + f2;
+    }
+
+    public void onUpdate() {
+        ++this.ticksExisted;
+        if (this.particleAge++ >= this.particleMaxAge) {
+            this.setDead();
+        }
+
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+        if (!this.isCollided) {
+            this.motionY -= 0.04D * (double)this.particleGravity;
+            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            this.motionX *= 0.9800000190734863D;
+            this.motionY *= 0.9800000190734863D;
+            this.motionZ *= 0.9800000190734863D;
+            if (this.onGround) {
+                this.motionX *= 0.699999988079071D;
+                this.motionZ *= 0.699999988079071D;
+                this.posY += 0.1D;
+            }
+        }
+
     }
 
     @Override
-    public void onUpdate()
-    {
-        if(particleAge++ >= particleMaxAge)
-        {
-            setExpired();
-            return;
-        }
-        prevPosX = posX;
-        prevPosY = posY;
-        prevPosZ = posZ;
-        if(motionX != 0.0D && motionZ != 0.0D && !isCollided)
-        {
-            motionY -= (double)this.particleGravity;
-            moveEntity(motionX, motionY, motionZ);
-            motionX *= 0.98000001907348633D;
-            motionY *= 0.98000001907348633D;
-            motionZ *= 0.98000001907348633D;
-            if(isCollided)
-            {
-                motionX *= 0.69999998807907104D;
-                motionZ *= 0.69999998807907104D;
-                posY += 0.2D;
-            }
-        }
-    }
-
-    @Override
-    public void moveEntity(double x, double y, double z) // Fix mojangbug
-    {
-        double d3 = x;
-        double d4 = y;
-        double d5 = z;
-        if(this.canCollide)
-        {
-            List<AxisAlignedBB> list = this.worldObj.getCollisionBoxes((Entity)null, this.getEntityBoundingBox().addCoord(x, y, z));
-
-            for(AxisAlignedBB axisalignedbb : list)
-            {
-                y = axisalignedbb.calculateYOffset(this.getEntityBoundingBox(), y);
-            }
-
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, y, 0.0D));
-
-            for(AxisAlignedBB axisalignedbb1 : list)
-            {
-                x = axisalignedbb1.calculateXOffset(this.getEntityBoundingBox(), x);
-            }
-
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
-
-            for(AxisAlignedBB axisalignedbb2 : list)
-            {
-                z = axisalignedbb2.calculateZOffset(this.getEntityBoundingBox(), z);
-            }
-
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, 0.0D, z));
-        }
-        else
-        {
-            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, y, z));
-        }
-
-        this.resetPositionToBB();
-        this.isCollided = d4 != y && d4 < 0.0D;
-
-        if(d3 != x)
-        {
-            this.motionX = 0.0D;
-        }
-
-        if(d5 != z)
-        {
-            this.motionZ = 0.0D;
-        }
-    }
-
-    @Override
-    public int getFXLayer()
-    {
+    public int getFXLayer() {
         return 0;
     }
-
 }

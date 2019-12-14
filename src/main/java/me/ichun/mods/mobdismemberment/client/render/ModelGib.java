@@ -6,10 +6,8 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityZombie;
 
-public class ModelGib extends ModelBase
-{
-    public ModelGib()
-    {
+public class ModelGib extends ModelBase{
+    public ModelGib(){
         textureWidth = 64;
         textureHeight = 32;
         leg64 = new ModelRenderer(this, 0, 16);
