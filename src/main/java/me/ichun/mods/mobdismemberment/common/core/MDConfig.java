@@ -23,6 +23,7 @@ public class MDConfig implements IConfigUser {
         bloodCount = config.createIntProperty("bloodCount", "mobdis.config.prop.bloodCount.name", "mobdis.config.prop.bloodCount.comment", true, false, 100, 1, 1000);
         greenBlood = config.createIntBoolProperty("greenBlood", "mobdis.config.prop.greenBlood.name", "mobdis.config.prop.greenBlood.comment", true, false, false);
         gibPushing = config.createIntBoolProperty("gibPushing", "mobdis.config.prop.gibPushing.name", "mobdis.config.prop.gibPushing.comment", true, false, true);
+        gibTimeOut = config.createIntProperty("bloodCount", "mobdis.config.prop.gibTimeOut.name", "mobdis.config.prop.gibTimeOut.comment", true, false, 2, 1, 30);
     }
 
     public int gibTime = 1000;
@@ -36,6 +37,8 @@ public class MDConfig implements IConfigUser {
     public int greenBlood = 0;
 
     public int gibPushing = 1;
+
+    public int gibTimeOut = 2;
 
     public String getModId(){
         return MobDismemberment.MOD_ID;

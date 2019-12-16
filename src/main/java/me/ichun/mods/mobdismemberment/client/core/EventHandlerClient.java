@@ -3,10 +3,10 @@ package me.ichun.mods.mobdismemberment.client.core;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
+import me.ichun.mods.mobdismemberment.client.render.ModelGibManager;
+import me.ichun.mods.mobdismemberment.client.render.gibmodels.GibModelTemplate;
 import me.ichun.mods.mobdismemberment.client.util.ASMUtil;
-import me.ichun.mods.mobdismemberment.client.entity.EntityGib;
-import me.ichun.mods.mobdismemberment.client.particle.ParticleBlood;
-import me.ichun.mods.mobdismemberment.common.MobDismemberment;
+import me.ichun.mods.mobdismemberment.client.util.CustomNPCsUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.Entity;
@@ -16,8 +16,6 @@ import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
@@ -26,8 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-public class EventHandlerClient
-{
+public class EventHandlerClient {
     public long clock;
 
     public HashMap<EntityLivingBase, Integer> dismemberTimeout = new HashMap<>();
@@ -36,13 +33,11 @@ public class EventHandlerClient
 
     @SubscribeEvent
     public void onLivingDeath(LivingDeathEvent event){
-        if(event.entity.worldObj.isRemote
-                && (event.entity instanceof EntityZombie
-                        || event.entity instanceof EntitySkeleton
-                        || event.entity instanceof EntityCreeper)
-
-                && !(event.entity instanceof EntityLivingBase && ((EntityLivingBase) event.entity).isChild())){
-            dismemberTimeout.put(event.entityLiving, 2);
+        if (event.entity.worldObj.isRemote && !event.entityLiving.isChild()){
+            GibModelTemplate gibTemplate = ModelGibManager.getApplicableModel(event.entityLiving);
+            if (gibTemplate != null){
+                dismemberTimeout.put(event.entityLiving, 2);
+            }
         }
     }
 
@@ -69,7 +64,7 @@ public class EventHandlerClient
                             explosionSources.add(ent);
                         }
                     }
-                    if((ent instanceof EntityZombie || ent instanceof EntitySkeleton || ent instanceof EntityCreeper) && !ent.isEntityAlive() && !dismemberTimeout.containsKey(ent)){
+                    if((ent instanceof EntityZombie || ent instanceof EntitySkeleton || ent instanceof EntityCreeper || CustomNPCsUtil.canDismember(ent)) && !ent.isEntityAlive() && !dismemberTimeout.containsKey(ent)){
                         dismemberTimeout.put((EntityLivingBase)ent, 2);
                     }
                 }
@@ -154,46 +149,13 @@ public class EventHandlerClient
     }
 
     public boolean dismember(World world, EntityLivingBase living, Entity explo){
-        if(living.isChild()){
-            return false;
-        }
-        if(living instanceof EntityCreeper){
-            world.spawnEntityInWorld(new EntityGib(world, living, 0, explo));
-            world.spawnEntityInWorld(new EntityGib(world, living, 3, explo));
-            world.spawnEntityInWorld(new EntityGib(world, living, 6, explo));
-            world.spawnEntityInWorld(new EntityGib(world, living, 7, explo));
-            world.spawnEntityInWorld(new EntityGib(world, living, 8, explo));
-            world.spawnEntityInWorld(new EntityGib(world, living, 9, explo));
-        }
-        else{
-            for(int i = 0; i < 6; i++){
-                world.spawnEntityInWorld(new EntityGib(world, living, i, explo));
-            }
-
-            if(living instanceof EntityZombie && MobDismemberment.config.blood == 1){
-
-                for(int k = 0; k < (explo != null ? MobDismemberment.config.bloodCount * 10 : MobDismemberment.config.bloodCount); k++){
-                    float var4 = 0.3F;
-                    double mX = (double)(-MathHelper.sin(living.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(living.rotationPitch / 180.0F * (float)Math.PI) * var4);
-                    double mZ = (double)(MathHelper.cos(living.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(living.rotationPitch / 180.0F * (float)Math.PI) * var4);
-                    double mY = (double)(-MathHelper.sin(living.rotationPitch / 180.0F * (float)Math.PI) * var4 + 0.1F);
-                    var4 = 0.02F;
-                    float var5 = living.getRNG().nextFloat() * (float)Math.PI * 2.0F;
-                    var4 *= living.getRNG().nextFloat();
-
-                    if(explo != null)
-                    {
-                        var4 *= 100D;
-                    }
-
-                    mX += Math.cos((double)var5) * (double)var4;
-                    mY += (double)((living.getRNG().nextFloat() - living.getRNG().nextFloat()) * 0.1F);
-                    mZ += Math.sin((double)var5) * (double)var4;
-
-                    Minecraft.getMinecraft().effectRenderer.addEffect(new ParticleBlood(living.worldObj, living.posX, living.posY + 0.5D + (living.getRNG().nextDouble() * 0.7D), living.posZ, living.motionX + mX, living.motionY + mY, living.motionZ + mZ, living instanceof EntityPlayer));
-                }
+        if (!living.isChild()){
+            GibModelTemplate gibTemplate = ModelGibManager.getApplicableModel(living);
+            if (gibTemplate != null){
+                gibTemplate.spawnEntityGibInWorld(world, living, explo);
+                return true;
             }
         }
-        return true;
+        return false;
     }
 }

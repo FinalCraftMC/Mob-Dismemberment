@@ -1,5 +1,6 @@
 package me.ichun.mods.mobdismemberment.client.entity;
 
+import me.ichun.mods.mobdismemberment.client.render.gibmodels.GibModelTemplate;
 import me.ichun.mods.mobdismemberment.common.MobDismemberment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,6 +26,12 @@ public class EntityGib extends Entity
 
     public boolean explosion;
 
+    public GibModelTemplate gibModelTemplate = null;
+
+    public GibModelTemplate getGibModelTemplate() {
+        return gibModelTemplate;
+    }
+
     public EntityGib(World world)
     {
         super(world);
@@ -36,8 +43,12 @@ public class EntityGib extends Entity
         ignoreFrustumCheck = true;
     }
 
-    public EntityGib(World world, EntityLivingBase gibParent, int gibType, Entity explo)
-    {
+    public EntityGib(World world, EntityLivingBase gibParent, int gibType, Entity explo, GibModelTemplate gibModelTemplate){
+        this(world,gibParent,gibType,explo);
+        this.gibModelTemplate = gibModelTemplate;
+    }
+
+    public EntityGib(World world, EntityLivingBase gibParent, int gibType, Entity explo){
         this(world);
         parent = gibParent;
         type = gibType;

@@ -2,7 +2,9 @@ package me.ichun.mods.mobdismemberment.common;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import ichun.common.core.config.ConfigHandler;
 import ichun.common.core.config.IConfigUser;
@@ -26,14 +28,16 @@ public class MobDismemberment
     public static final String MOD_ID = "mobdismemberment";
     public static final String MOD_NAME = "MobDismemberment";
 
+    private static boolean hasMobAmputation = false;
+    private static boolean hasCustomNPCs = false;
+
+
     @Mod.Instance(MOD_ID)
     public static MobDismemberment instance;
 
     public static MDConfig config;
 
     public static EventHandlerClient eventHandlerClient;
-
-    private static boolean hasMobAmputation;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event){
@@ -48,8 +52,17 @@ public class MobDismemberment
         RenderingRegistry.registerEntityRenderingHandler(EntityGib.class, new RenderGib());
     }
 
-    public static boolean hasMobAmputation()
-    {
+    @Mod.EventHandler
+    public void preInit(FMLPostInitializationEvent event){
+        hasCustomNPCs = Loader.isModLoaded("customnpcs");
+    }
+
+
+    public static boolean hasCustomNPCs(){
+        return hasCustomNPCs;
+    }
+
+    public static boolean hasMobAmputation(){
         return hasMobAmputation;
     }
 }

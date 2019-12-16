@@ -14,10 +14,10 @@ import org.lwjgl.opengl.GL11;
 
 public class RenderGib extends Render{
 
-    public ModelGib modelGib;
+    public ModelGibManager modelGibManager;
 
     public RenderGib(){
-        modelGib = new ModelGib();
+        modelGibManager = new ModelGibManager();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class RenderGib extends Render{
         GL11.glRotatef(EntityHelperBase.interpolateRotation(par1Entity.prevRotationPitch, par1Entity.rotationPitch, par9), -1.0F, 0.0F, 0.0F);
         GL11.glTranslatef(0.0F, 1.5F - gib.height * 0.5F, 0.0F);
         GL11.glScalef(-1.0F, -1.0F, 1.0F);
-        this.modelGib.render(gib, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
+        this.modelGibManager.render(gib, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F, 0.0625F);
         GL11.glAlphaFunc(516, 0.1F);
         GL11.glDisable(3042);
         GL11.glPopMatrix();
