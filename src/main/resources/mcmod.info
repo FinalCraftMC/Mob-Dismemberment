@@ -1,12 +1,10 @@
 [
 {
-  "modid" : "mobdismemberment",
-  "name" : "MobDismemberment",
+  "modid" : "bettermobdismemberment",
+  "name" : "BetterMobDismemberment",
   "version" : "4.1.0",
-  "url" : "http://ichun.me/mods/mob-dismemberment/",
-  "credits" : "",
+  "credits" : "Ty for iChun for making this possible",
   "authorList": [
-    "iChun",
     "EverNife"
   ],
   "description": "Dismember mobs!",
@@ -16,7 +14,7 @@
   "screenshots": [
   ],
   "dependencies": [
-    "Forge", "iChunUtil"
+    "Forge"
   ]
 }
 ]
