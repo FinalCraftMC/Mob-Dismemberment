@@ -71,7 +71,7 @@ public class GMTHumanNPC implements GibModelTemplate, INPCGibModel{
 
     @Override
     public boolean isApplicableFor(EntityLivingBase living){
-        if (CustomNPCsUtil.isEntityNPCHuman(living)) return true;
+        if (CustomNPCsUtil.isApplicableNPC(living) && CustomNPCsUtil.isEntityNPCHuman(living)) return true;
         return false;
     }
 

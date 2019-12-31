@@ -71,7 +71,7 @@ public class GMTZombieNPC implements GibModelTemplate, INPCGibModel{
 
     @Override
     public boolean isApplicableFor(EntityLivingBase living){
-        if (CustomNPCsUtil.isEntityNPCZombie(living)) return true;
+        if (CustomNPCsUtil.isApplicableNPC(living) && CustomNPCsUtil.isEntityNPCZombie(living)) return true;
         return false;
     }
 
